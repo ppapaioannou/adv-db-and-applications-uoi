@@ -56,13 +56,15 @@ def create_mysql_command():
 
     # field terminated by '\t' means that every seperated by tab field in the
     # tsv will be considered as a seperate value,enclosed by "" and terminated
-    # in a new line to seperate rows
+    # in a new line to seperate rows, also ignore the first row because we dont need
+    # the name of the indexes
 
     load_command = """LOAD DATA LOCAL INFILE "final.tsv"
     INTO TABLE data
     FIELDS TERMINATED BY '\t'
     ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS
     """+load_command+";"
 
     return [table_command, load_command]
