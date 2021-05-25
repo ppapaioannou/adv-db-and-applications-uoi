@@ -8,12 +8,15 @@ import Typography from '@material-ui/core/Typography';
 
 import TransferList from './TransferList'
 import CountrySelection from './CountrySelection'
-//import {selection} from './TransferList';
 import YearSelect from './YearSelect'
 
-//import DataService from '../services/DataService'
 
-//export var {countries} = [];
+
+//import Page from './test.html';
+
+//import BarChart from '../charts/BarChart'
+//var htmlContent = require('../charts/Barplot.html');
+
 
 
 const useStyles = makeStyles((theme) => ({
@@ -86,6 +89,17 @@ export default function HorizontalLabelPositionBelowStepper() {
     setActiveStep(0);
   };
 
+  const openInNewTab = () => {
+
+    var newWindow = window.open();
+    newWindow.document.location.href = "home/panagiotis/Documents/adv-db-and-applications-uoi/src/frontend-react/src/charts/Barplot.html";
+
+
+    //var url = "../charts/Barplot.html"
+    //const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+    //if (newWindow) newWindow.opener = null
+  }
+
   return (
     <div className={classes.root}>
       <Stepper activeStep={activeStep} alternativeLabel>
@@ -98,7 +112,8 @@ export default function HorizontalLabelPositionBelowStepper() {
       <div>
         {activeStep === steps.length ? (
           <div>
-            <Typography className={classes.instructions}>All steps completed</Typography>
+            <BarChart/>
+
             <Button onClick={handleReset}>Reset</Button>
           </div>
         ) : (

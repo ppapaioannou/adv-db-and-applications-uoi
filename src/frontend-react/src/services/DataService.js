@@ -16,6 +16,12 @@ class DataService {
   }
 
 
+  getFinalData(years) {
+    var new_request = DATA_REST_API_URL + 'y/' + years;
+    return axios.get(new_request);
+  }
+
+
     //getCountries = async (indexes) => {
     //  var request = DATA_REST_API_URL + 'i/' + indexes;
     //  return await axios.get(request);

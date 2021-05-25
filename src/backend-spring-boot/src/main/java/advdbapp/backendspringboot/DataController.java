@@ -1,12 +1,21 @@
 package advdbapp.backendspringboot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,28 +41,177 @@ public class DataController {
     private HashSet<String> years = new HashSet<String>();
     private HashSet<String> countries = new HashSet<String>();
 
-    
+    private ArrayList<String> totalIndexes = new ArrayList<String>();
+
+    private String csv = "";
+
     /*
-    @GetMapping("/final")
-    public @ResponseBody Iterable<Data> find() {
-        ArrayList<Data> t = new ArrayList<Data>();
-        for (String id : ids) {
-            Optional<Data> optionalEntity =  findById(id);
-            Data dataEntity = optionalEntity.get();
-            t.add(dataEntity);
-        }
-        return t;
+    @GetMapping(value = "/welcome", produces = MediaType.TEXT_HTML_VALUE)
+    @ResponseBody
+    public String welcomeAsHTML() {
+        //ArrayList<String> file = new ArrayList<String>();
+        String file = "";
+        try {
+            File myObj = new File("src/backend-spring-boot/src/main/resources/static/Barplot.html");
+            
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+              String data = myReader.nextLine();
+              file += data + "\n";
+              //System.out.println(data);
+            }
+            myReader.close();
+          } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+          }
+          return file;
+        //return "<html>\n" + "<header><title>Welcome</title></header>\n" +
+        //  "<body>\n" + "Hello world\n" + "</body>\n" + "</html>";
     }
     */
 
 
+    
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "result.csv")
+    public void fooAsCSV(HttpServletResponse response) throws IOException {        
+        response.setContentType("text/plain; charset=utf-8");
+
+        response.getWriter().print(csv);
+    }
+
+
+    public void finalFind() {
+        List<String> sortedIds = new ArrayList<String>(ids);
+        Collections.sort(sortedIds);
+
+        years.clear();
+        countries.clear();
+        
+
+        HashMap<String, String> csvData = new HashMap<String, String>();
+
+        for (String id : sortedIds) {
+            Optional<Data> optionalEntity =  findById(id);
+            Data dataEntity = optionalEntity.get();
+
+            String year = dataEntity.getYear();
+            String country = dataEntity.getCountry();
+
+            years.add(year);
+            countries.add(country);
+            
+
+            for (String index : totalIndexes) {
+                String key = year + country + index;
+                String value = getIndexFromData(dataEntity, index);
+                csvData.put(key, value);
+                
+            }
+        }
+        List<String> sortedYears = new ArrayList<String>(years);
+        Collections.sort(sortedYears);
+
+        List<String> sortedIndexes = new ArrayList<String>(totalIndexes);
+        Collections.sort(sortedIndexes);
+
+        List<String> sortedCountries = new ArrayList<String>(countries);
+        Collections.sort(sortedCountries);
+        int counter = 0;
+        String collumn = "";
+        for (String year : sortedYears) {
+            String row = year + ",";
+            for (String index : sortedIndexes) {
+                for (String country : sortedCountries) {
+                    String key = year + country + index;
+                    if (counter == 0) {
+                        collumn += country + " " + index + ",";
+
+                        row += csvData.get(key) + ",";
+                    }
+                    else {                        
+                        row += csvData.get(key) + ",";
+                    }
+                }
+            }
+            row = row.substring(0, row.length() - 1);
+            counter += 1;
+            csv += row + "\n";
+            
+        }
+        collumn = collumn.substring(0, collumn.length() - 1);
+        csv = "year," + collumn + "\n" + csv;
+        csv = csv.substring(0, csv.length() - 1);
+        
+    }
+    
+    
+    
+    private String getIndexFromData(Data dataEntity, String index) {
+        if (index.equals("CoalConsumption")) {
+            return dataEntity.getCoalConsumptionTotal();
+        }
+        else if (index.equals("ElectricityGeneration")) {
+            return dataEntity.getElectricityGenerationTotal();
+        }
+        else if (index.equals("EnergyProduction")) {
+            return dataEntity.getEnergyProductionTotal();
+        }
+        else if (index.equals("HydroPowerGeneration")) {
+            return dataEntity.getHydroPowerGenerationTotal();
+        }
+        else if (index.equals("NaturalGasProduction")) {
+            return dataEntity.getNaturalGasProductionTotal();
+        }
+        else if (index.equals("NaturalGasProvedReserves")) {
+            return dataEntity.getNaturalGasProvedReservesTotal();
+        }
+        else if (index.equals("NuclearPowerGeneration")) {
+            return dataEntity.getNuclearPowerGenerationTotal();
+        }
+        else if (index.equals("OilConsumption")) {
+            return dataEntity.getOilConsumptionTotal();
+        }
+        else if (index.equals("OilProduction")) {
+            return dataEntity.getOilProductionTotal();
+        }
+        else if (index.equals("OilProvedReserves")) {
+            return dataEntity.getOilProvedReservesTotal();
+        }
+        else if (index.equals("ResidentialElectricityUse")) {
+            return dataEntity.getResidentialElectricityUseTotal();
+        }
+        else if (index.equals("HappinessScore")) {
+            return dataEntity.getHapiscoreWhr();
+        }
+        else if (index.equals("HumanDevelopmentIndex")) {
+            return dataEntity.getHdiHumanDevelopmentIndex();
+        }
+        else if (index.equals("GDP")) {
+            return dataEntity.getIncomePerPersonGdppercapitaPppInflationAdjusted();
+        }
+        else if (index.equals("InequalityIndexGini")) {
+            return dataEntity.getInequalityIndexGini();
+        }
+        else if (index.equals("TotalPopulation")) {
+            return dataEntity.getPopulationTotal();
+        }
+        else {
+            return null;
+        }
+    }
+    
+    
+
+    //ESKEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
     @GetMapping(path="y/{years}")
-    public void getFinalIds(@PathVariable String years) {
+    public @ResponseBody void getFinalIds(@PathVariable String years) {
         HashSet<String> tempIds = new HashSet<String>();
         int minYear = Integer.parseInt(years.split("-")[0]);
         int maxYear = Integer.parseInt(years.split("-")[1]);
         
-
+        
         for (String id : ids) {
             Optional<Data> optionalEntity = findById(id);
             Data dataEntity = optionalEntity.get();
@@ -64,11 +222,9 @@ public class DataController {
             }
         }
         ids = tempIds;
-
-        for (String id : ids) {
-            System.out.println(id);
-        }
         
+
+        finalFind();
     }
 
     private Optional<Data> findById(String id) {
@@ -131,6 +287,7 @@ public class DataController {
 
         int indexCounter = 0;
         for (String index : indexes.split("-")) {
+            totalIndexes.add(index);
             for (String result : findByIndex(index)) {
                 String[] splittedResult = result.split(",");
                 String id = splittedResult[0];
@@ -145,8 +302,7 @@ public class DataController {
                 }
             }
             if (indexCounter >= 1) {
-                ids.retainAll(tempIds);
-                countries.retainAll(tempCountries);
+                ids.retainAll(tempIds);                 countries.retainAll(tempCountries);
                 tempIds.clear();
                 tempCountries.clear();
             }
@@ -154,6 +310,8 @@ public class DataController {
         }
         List<String> list = new ArrayList<String>(countries);
         Collections.sort(list);
+
+
 
         return list;
     }
@@ -212,3 +370,4 @@ public class DataController {
         }
     }
 }
+//ESKEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
