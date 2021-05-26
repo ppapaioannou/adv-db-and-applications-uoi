@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BackendSpringBootApplication<backend-spring-boot>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "advdbapp.backendspringboot.BackendSpringBootApplication",
+            "projectName": "backend-spring-boot",
+            "args": ""
+        }
+    ]
+}
