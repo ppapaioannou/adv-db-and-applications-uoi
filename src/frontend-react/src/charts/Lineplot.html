@@ -12,8 +12,8 @@
 <script>
 
 // set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 60},
-    width = 460 - margin.left - margin.right,
+var margin = {top: 10, right: 50, bottom: 30, left: 70},
+    width = 1200 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
@@ -26,7 +26,7 @@ var svg = d3.select("#my_dataviz")
           "translate(" + margin.left + "," + margin.top + ")");
 
 //Read the data
-d3.csv("http://localhost:8080/data/lineResult.csv", function(data) {
+d3.csv("http://localhost:8080/data/plot/lineResult.csv", function(data) {
 
   // group the data: I want to draw one line per group
   var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
@@ -36,17 +36,18 @@ d3.csv("http://localhost:8080/data/lineResult.csv", function(data) {
   // Add X axis --> it is a date format
   var x = d3.scaleLinear()
     .domain(d3.extent(data, function(d) { return d.year; }))
-    .range([ 0, width ]);
+    .range([ 0, width-220 ]);
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).ticks(5));
+    .call(d3.axisBottom(x).ticks(4));
 
   // Add Y axis
   var y = d3.scaleLinear()
-    .domain([0, d3.max(data, function(d) { return +d.measurement; })])
+    .domain([0, d3.max(data, function(d) { return +d.measurement; })]).nice()
     .range([ height, 0 ]);
   svg.append("g")
     .call(d3.axisLeft(y));
+	
 
   // color palette
   var res = sumstat.map(function(d){ return d.key }) // list of group names
@@ -68,7 +69,25 @@ d3.csv("http://localhost:8080/data/lineResult.csv", function(data) {
             .y(function(d) { return y(+d.measurement); })
             (d.values)
         })
+		
+  var legend = svg.selectAll(".legend")
+      .data(color.domain())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
+  legend.append("rect")
+      .attr("x", width)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", width)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
 })
 
 </script>

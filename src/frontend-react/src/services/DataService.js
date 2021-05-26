@@ -2,6 +2,9 @@ import axios from 'axios'
 
 const DATA_REST_API_URL = 'http://localhost:8080/data/';
 
+// this class just talks to the backend
+// for each step there is a specific request path
+
 class DataService {
 
   getDiagramType(diagramType) {

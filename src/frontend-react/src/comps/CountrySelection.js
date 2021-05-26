@@ -15,7 +15,16 @@ import DataService from '../services/DataService';
 import {countries} from './IndexSelection';
 import {countriesScatter} from './IndexSelectionScatter';
 
+// export the years list for the country selection step
 export var {years} = [];
+
+// this step presents the user with two list menus
+// with all the available countries that have measurements
+// for the selected indexes, after the user finalizes
+// their selection a request is made to the backend to get the list
+// of available years for the next step
+
+// handleFinalSelection() does the request
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -104,10 +113,11 @@ export default function TransferList() {
   };
 
   const handleFinalSelection = () => {
+    // join the countries with '-' and remove any white space
     var selection = right.join("-").replace(/\s/g, "");
+    // get a list from the respone that has what we need
     DataService.getYears(selection).then((response) => {
       years = response.data
-      console.log(years);
     });
   };
 

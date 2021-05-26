@@ -22,7 +22,7 @@ body {
 <script src="https://d3js.org/d3.v3.js"></script>
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -43,12 +43,12 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var svg = d3.select("body").append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width+60 + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("http://localhost:8080/data/scatterResult.csv", function(error, data) {
+d3.csv("http://localhost:8080/data/plot/scatterResult.csv", function(error, data) {
   if (error) throw error;
 
   data.forEach(function(d) {

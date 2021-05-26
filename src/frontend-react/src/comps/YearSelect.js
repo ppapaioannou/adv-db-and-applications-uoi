@@ -7,10 +7,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 
-
 import DataService from '../services/DataService';
 
 import {years} from './CountrySelection';
+
+// this step presents the user with two drop down menus
+// with all the available years that satisfy the selected
+// criterias, after the user finalizes
+// their selection the final request is made to the backend
+// and the diagram is ready to be created
+
+// handleFinalSelection() does the request
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -38,6 +45,7 @@ export default function SimpleSelect() {
   };
 
   const handleFinalSelection = () => {
+    // join the years with '-'
     var selection = minYear + "-" + maxYear;
     DataService.getFinalData(selection);
   };

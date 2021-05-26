@@ -9,6 +9,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 
+/*
+                    --Data--
+
+
+Fundamental data entity that represents entries in our db
+every field has a get method because we need to be able
+to get specific measurements for the diagrams
+
+
+*/
+
 @Entity
 @Table(name = "data")
 public class Data {

@@ -8,11 +8,29 @@ import org.springframework.data.repository.CrudRepository;
 
 import advdbapp.backendspringboot.persistence.model.Data;
 
+/*
+                    --Data Repository--
+
+
+Interface that the Data Controller uses to manipulate data
+some functions are already implemented from the Crud Repository
+but there was need for some more
+
+
+*/
+
 
 public interface DataRepository extends CrudRepository<Data, Long> {
     Iterable<Data> findByCountry(String country);
     Iterable<Data> findByYear(String year);
 
+
+    // MySQL queries for each index type that return id and country
+    // we will use this information to periodically prune the returned data
+    // based on user choise from the frontend
+
+    // Since we have one big data table containing everything 
+    // we need to check for the rows that have a measurement and not 'None'
 
     @Query("SELECT DISTINCT d.id, d.country from Data d where d.coalConsumptionTotal != 'None'")
     public List<String> coalConsumptionTotalCountryQuery();

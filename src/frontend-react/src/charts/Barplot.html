@@ -20,6 +20,7 @@ var svg = d3.select("svg"),
 var x0 = d3.scaleBand()
     .rangeRound([0, width])
     .paddingInner(0.1);
+	
 
 var x1 = d3.scaleBand()
     .padding(0.05);
@@ -30,7 +31,7 @@ var y = d3.scaleLinear()
 var z = d3.scaleOrdinal()
     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
-d3.csv("http://localhost:8080/data/barResult.csv", function(d, i, columns) {
+d3.csv("http://localhost:8080/data/plot/barResult.csv", function(d, i, columns) {
   for (var i = 1, n = columns.length; i < n; ++i) d[columns[i]] = +d[columns[i]];
   return d;
 }, function(error, data) {
@@ -82,7 +83,7 @@ d3.csv("http://localhost:8080/data/barResult.csv", function(d, i, columns) {
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
   legend.append("rect")
-      .attr("x", width - 19)
+      .attr("x", width)
       .attr("width", 19)
       .attr("height", 19)
       .attr("fill", z);

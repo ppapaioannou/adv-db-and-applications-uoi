@@ -3,6 +3,16 @@ package advdbapp.backendspringboot;
 import java.util.HashMap;
 import java.util.List;
 
+/*
+                    --csv Creator--
+
+Data for the diagrams can be fed by .csv files, so for each
+type of diagram we create a specific csv file with the information
+that is needed for the plotting
+
+
+*/
+
 public class CsvCreator {
 
     private String csv;
@@ -22,7 +32,6 @@ public class CsvCreator {
 
     public String lineCsv() {
         csv = "";
-
         for (String year : sortedYears) {
             String row = "";
             for (String index : sortedIndexes) {
@@ -45,7 +54,6 @@ public class CsvCreator {
 
     public String barCsv() {
         csv = "";
-
         int counter = 0;
         String collumn = "";
         for (String year : sortedYears) {
@@ -78,7 +86,6 @@ public class CsvCreator {
 
     public String scatterCsv() {
         csv = "";
-
         for (String year : sortedYears) {
             //String row = year + ",";
             for (String country : sortedCountries) {

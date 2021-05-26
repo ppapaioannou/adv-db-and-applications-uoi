@@ -15,6 +15,17 @@ import CountrySelection from './CountrySelection';
 import YearSelect from './YearSelect';
 
 
+// the stepper consists of 4 steps
+// -first the user must choose the diagram type that they want
+// -then they must select index types
+// -after that they must choose countries
+// -and finaly the year interval
+// after that they can see the diagram that was generated
+
+// getStepContent()
+// this function handles the componets that represent the steps
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {

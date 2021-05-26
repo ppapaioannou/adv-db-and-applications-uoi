@@ -8,7 +8,16 @@ import Button from '@material-ui/core/Button';
 
 import DataService from '../services/DataService';
 
-export var {diagramType} = "";
+// export the diagram type for the stepper to handle the next step
+export var {diagramType} = ""; 
+
+// this component's job is to get the diagram type
+// that the user requested and inform the backend
+// also based on the user choise the next step will differ
+// line and bar plots can have multiple indexes but scatter
+// only needs two index types to correlate
+
+// handleFinalSelection() does the request
 
 
 export default function FormControlLabelPosition() {

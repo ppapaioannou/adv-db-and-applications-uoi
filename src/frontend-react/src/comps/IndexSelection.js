@@ -13,8 +13,15 @@ import Divider from '@material-ui/core/Divider';
 
 import DataService from '../services/DataService';
 
-export var {countries} = [];
+// export the countries list for the country selection step
+export var {countries} = []; 
 
+// this step presents the user with two list menus
+// with all the available indexes, after the user finalizes
+// their selection a request is made to the backend to get the list
+// of available countries for the next step
+
+// handleFinalSelection() does the request
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,7 +108,9 @@ export default function TransferList() {
   };
 
   const handleFinalSelection = () => {
+    // join the indexes with '-' and remove any white space
     var selection = right.join("-").replace(/\s/g, "");
+    // get a list from the respone that has what we need
     DataService.getCountries(selection).then((response) => {
       countries = response.data
     });

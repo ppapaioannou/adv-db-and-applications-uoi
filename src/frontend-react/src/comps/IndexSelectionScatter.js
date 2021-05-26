@@ -10,7 +10,15 @@ import Button from '@material-ui/core/Button';
 
 import DataService from '../services/DataService';
 
+// export the countries list for the country selection step
 export var {countriesScatter} = [];
+
+// this step presents the user with two drop down menus
+// with all the available indexes, after the user finalizes
+// their selection a request is made to the backend to get the list
+// of available countries for the next step
+
+// handleFinalSelection() does the request
 
 const indexes =
       ['Coal Consumption','Electricity Generation','Energy Production',
@@ -45,8 +53,10 @@ export default function SimpleSelect() {
   };
 
   const handleFinalSelection = () => {
+    // join the indexes with '-' and remove any white space
     var selection = index1 + "-" + index2;
     selection = selection.replace(/\s/g, "")
+    // get a list from the respone that has what we need
     DataService.getCountries(selection).then((response) => {
         countriesScatter = response.data
       });
