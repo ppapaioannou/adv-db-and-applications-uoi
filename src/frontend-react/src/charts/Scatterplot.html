@@ -22,9 +22,9 @@ body {
 <script src="https://d3js.org/d3.v3.js"></script>
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 100},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var margin = {top: 100, right: 250, bottom: 175, left: 450},
+    width = 1400 - margin.left - margin.right,
+    height = 750 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -62,7 +62,7 @@ d3.csv("http://localhost:8080/data/plot/scatterResult.csv", function(error, data
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
-      .call(xAxis)
+      .call(xAxis.ticks(7))
     .append("text")
       .attr("class", "label")
       .attr("x", width)
@@ -101,13 +101,12 @@ d3.csv("http://localhost:8080/data/plot/scatterResult.csv", function(error, data
       .style("fill", color);
 
   legend.append("text")
-      .attr("x", width - 24)
+      .attr("x", width)
       .attr("y", 9)
       .attr("dy", ".35em")
-      .style("text-anchor", "end")
+      .style("text-anchor", "start")
       .text(function(d) { return d; });
 
 });
 
 </script>
-
