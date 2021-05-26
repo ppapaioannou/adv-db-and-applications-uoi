@@ -10,6 +10,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
+
 import DataService from '../services/DataService';
 
 export var {countries} = [];
@@ -52,9 +53,6 @@ const indexes =
        'Nuclear Power Generation', 'Oil Consumption', 'Oil Production',
        'Oil Proved Reserves','Residential Electricity Use','Happiness Score',
        'Human Development Index','GDP','Inequality Index Gini','Total Population']
-
-//const trueIndexes = ['coalconsumptionTotal','residentialElectricityUseTotal',
-//                     'populationTotal']
 
 
 export default function TransferList() {
@@ -103,14 +101,10 @@ export default function TransferList() {
   };
 
   const handleFinalSelection = () => {
-
     var selection = right.join("-").replace(/\s/g, "");
     DataService.getCountries(selection).then((response) => {
       countries = response.data
-      //console.log(response.data)
     });
-    //console.log(countries)
-    //return selection;
   };
 
   const customList = (title, items) => (

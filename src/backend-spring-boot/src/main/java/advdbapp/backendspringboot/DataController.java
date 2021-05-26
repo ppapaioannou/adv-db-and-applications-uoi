@@ -1,21 +1,15 @@
 package advdbapp.backendspringboot;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,63 +31,93 @@ public class DataController {
     private DataRepository dataRepository;
 
 
+    private String diagramType;
+
     private HashSet<String> ids = new HashSet<String>();
     private HashSet<String> years = new HashSet<String>();
     private HashSet<String> countries = new HashSet<String>();
 
     private ArrayList<String> totalIndexes = new ArrayList<String>();
 
-    private String csv = "";
-
-    /*
-    @GetMapping(value = "/welcome", produces = MediaType.TEXT_HTML_VALUE)
-    @ResponseBody
-    public String welcomeAsHTML() {
-        //ArrayList<String> file = new ArrayList<String>();
-        String file = "";
-        try {
-            File myObj = new File("src/backend-spring-boot/src/main/resources/static/Barplot.html");
-            
-            Scanner myReader = new Scanner(myObj);
-            while (myReader.hasNextLine()) {
-              String data = myReader.nextLine();
-              file += data + "\n";
-              //System.out.println(data);
-            }
-            myReader.close();
-          } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-          }
-          return file;
-        //return "<html>\n" + "<header><title>Welcome</title></header>\n" +
-        //  "<body>\n" + "Hello world\n" + "</body>\n" + "</html>";
-    }
-    */
+    // in the end the diagrams will get their data from .cvs files
+    // that we will create 
+    private CsvCreator csvCreator= new CsvCreator();
+    private String lineCsv = "";
+    private String barCsv = "";
+    private String scatterCsv = "";
 
 
-    
-    @CrossOrigin(origins = "*")
-    @RequestMapping(value = "result.csv")
-    public void fooAsCSV(HttpServletResponse response) throws IOException {        
-        response.setContentType("text/plain; charset=utf-8");
-
-        response.getWriter().print(csv);
-    }
-
-
-    public void finalFind() {
-        List<String> sortedIds = new ArrayList<String>(ids);
-        Collections.sort(sortedIds);
-
+    private void reset() {
+        diagramType = "";
+        ids.clear();
         years.clear();
         countries.clear();
+        totalIndexes.clear();
+        lineCsv = "";
+        barCsv = "";
+        scatterCsv = "";
+    }
+
+    // the diagrams just have to use the corresponding url to get the data
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "lineResult.csv")
+    public void dataForLine(HttpServletResponse response) throws IOException {        
+        response.setContentType("text/plain; charset=utf-8");
+        response.getWriter().print(lineCsv);
+    }
+    
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "barResult.csv")
+    public void dataForBar(HttpServletResponse response) throws IOException {        
+        response.setContentType("text/plain; charset=utf-8");
+        response.getWriter().print(barCsv);
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "scatterResult.csv")
+    public void dataForScatter(HttpServletResponse response) throws IOException {        
+        response.setContentType("text/plain; charset=utf-8");
+        response.getWriter().print(scatterCsv);
+    }
+
+    
+    
+    @GetMapping(path="y/{years}")
+    public @ResponseBody void getFinalIds(@PathVariable String years) {
+        HashSet<String> tempIds = new HashSet<String>();
+        int minYear = Integer.parseInt(years.split("-")[0]);
+        int maxYear = Integer.parseInt(years.split("-")[1]);
         
+        for (String id : ids) {
+            Optional<Data> optionalEntity = findById(id);
+            Data dataEntity = optionalEntity.get();
+            int dataEntityYear = Integer.parseInt(dataEntity.getYear());
+
+            if (dataEntityYear >= minYear && dataEntityYear <= maxYear) {
+                tempIds.add(id);
+            }
+        }
+        ids = tempIds;
+
+        createFinalData();        
+    }
+
+    private Optional<Data> findById(String id) {
+        long newId=Integer.parseInt(id);
+        return dataRepository.findById(newId);
+    }
+
+    private void createFinalData() {
+        years.clear();
+        countries.clear();
+        List<String> sortedIds = new ArrayList<String>(ids);
+        Collections.sort(sortedIds);
 
         HashMap<String, String> csvData = new HashMap<String, String>();
 
         for (String id : sortedIds) {
-            Optional<Data> optionalEntity =  findById(id);
+            Optional<Data> optionalEntity = findById(id);
             Data dataEntity = optionalEntity.get();
 
             String year = dataEntity.getYear();
@@ -118,34 +142,20 @@ public class DataController {
 
         List<String> sortedCountries = new ArrayList<String>(countries);
         Collections.sort(sortedCountries);
-        int counter = 0;
-        String collumn = "";
-        for (String year : sortedYears) {
-            String row = year + ",";
-            for (String index : sortedIndexes) {
-                for (String country : sortedCountries) {
-                    String key = year + country + index;
-                    if (counter == 0) {
-                        collumn += country + " " + index + ",";
 
-                        row += csvData.get(key) + ",";
-                    }
-                    else {                        
-                        row += csvData.get(key) + ",";
-                    }
-                }
-            }
-            row = row.substring(0, row.length() - 1);
-            counter += 1;
-            csv += row + "\n";
-            
-        }
-        collumn = collumn.substring(0, collumn.length() - 1);
-        csv = "year," + collumn + "\n" + csv;
-        csv = csv.substring(0, csv.length() - 1);
+        csvCreator.init(csvData, sortedYears, sortedIndexes, sortedCountries);
         
+
+        if (diagramType.equals("line")) {
+            lineCsv = csvCreator.lineCsv();
+        }
+        else if (diagramType.equals("bar")) {
+            barCsv = csvCreator.barCsv();
+        }
+        else if (diagramType.equals("scatter")) {
+            scatterCsv = csvCreator.scatterCsv();
+        }
     }
-    
     
     
     private String getIndexFromData(Data dataEntity, String index) {
@@ -201,36 +211,6 @@ public class DataController {
             return null;
         }
     }
-    
-    
-
-    //ESKEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-    @GetMapping(path="y/{years}")
-    public @ResponseBody void getFinalIds(@PathVariable String years) {
-        HashSet<String> tempIds = new HashSet<String>();
-        int minYear = Integer.parseInt(years.split("-")[0]);
-        int maxYear = Integer.parseInt(years.split("-")[1]);
-        
-        
-        for (String id : ids) {
-            Optional<Data> optionalEntity = findById(id);
-            Data dataEntity = optionalEntity.get();
-            int dataEntityYear = Integer.parseInt(dataEntity.getYear());
-
-            if (dataEntityYear >= minYear && dataEntityYear <= maxYear) {
-                tempIds.add(id);
-            }
-        }
-        ids = tempIds;
-        
-
-        finalFind();
-    }
-
-    private Optional<Data> findById(String id) {
-        long newId=Integer.parseInt(id);
-        return dataRepository.findById(newId);
-    }
 
     
     @GetMapping(path="c/{countries}")
@@ -264,8 +244,6 @@ public class DataController {
         ids = tempIds;
         List<String> list = new ArrayList<String>(years);
         Collections.sort(list);
-        //String[] years = {String.valueOf(list.get(0)), String.valueOf(list.get(list.size()-1))};
-
         return list;   
     }
 
@@ -279,13 +257,8 @@ public class DataController {
     public @ResponseBody Iterable<String> getCountries(@PathVariable String indexes) {
         HashSet<String> tempIds = new HashSet<String>();
         HashSet<String> tempCountries = new HashSet<String>();
-
-        ids.clear();
-        years.clear();
-        countries.clear();
-
-
         int indexCounter = 0;
+
         for (String index : indexes.split("-")) {
             totalIndexes.add(index);
             for (String result : findByIndex(index)) {
@@ -302,7 +275,8 @@ public class DataController {
                 }
             }
             if (indexCounter >= 1) {
-                ids.retainAll(tempIds);                 countries.retainAll(tempCountries);
+                ids.retainAll(tempIds);
+                countries.retainAll(tempCountries);
                 tempIds.clear();
                 tempCountries.clear();
             }
@@ -310,9 +284,6 @@ public class DataController {
         }
         List<String> list = new ArrayList<String>(countries);
         Collections.sort(list);
-
-
-
         return list;
     }
 
@@ -369,5 +340,11 @@ public class DataController {
             return null;
         }
     }
+
+
+    @GetMapping(path="d/{diagramType}")
+    public @ResponseBody void getDiagramType(@PathVariable String diagramType) {
+        reset();
+        this.diagramType = diagramType;
+    }
 }
-//ESKEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE

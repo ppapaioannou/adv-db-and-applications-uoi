@@ -6,6 +6,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
+
+
 import DataService from '../services/DataService';
 
 import {years} from './CountrySelection';
@@ -36,8 +38,8 @@ export default function SimpleSelect() {
   };
 
   const handleFinalSelection = () => {
-    var selection = minYear + "-" + maxYear;//right.join("-").replace(/\s/g, "");
-    DataService.getFinalData(selection)
+    var selection = minYear + "-" + maxYear;
+    DataService.getFinalData(selection);
   };
 
   return (

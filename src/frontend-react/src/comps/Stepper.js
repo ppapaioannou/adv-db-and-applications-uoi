@@ -6,16 +6,13 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-import TransferList from './TransferList'
-import CountrySelection from './CountrySelection'
-import YearSelect from './YearSelect'
+import PlotSelection from './PlotSelection';
+import {diagramType} from './PlotSelection';
 
-
-
-//import Page from './test.html';
-
-//import BarChart from '../charts/BarChart'
-//var htmlContent = require('../charts/Barplot.html');
+import IndexSelection from './IndexSelection';
+import IndexSelectionScatter from './IndexSelectionScatter';
+import CountrySelection from './CountrySelection';
+import YearSelect from './YearSelect';
 
 
 
@@ -41,9 +38,14 @@ function getSteps() {
 function getStepContent(stepIndex) {
   switch (stepIndex) {
     case 0:
-      return 'Welcome'
+      return <PlotSelection/>;
     case 1:
-      return <TransferList/>;
+      if (diagramType === 'scatter') {
+        return <IndexSelectionScatter/>
+      }
+      else {
+        return <IndexSelection/>;
+      }      
     case 2:
       return <CountrySelection/>;
     case 3:
@@ -59,25 +61,6 @@ export default function HorizontalLabelPositionBelowStepper() {
   const steps = getSteps();
 
   const handleNext = () => {
-    switch (activeStep) {
-      case 0:
-        console.log("f")
-        break
-      case 1:
-        //DataService.getCountries(selection).then((response) => {
-        //    console.log(response.data)
-        //});
-        break
-      case 2:
-        console.log("Now Select Year Interval")
-        break
-      case 3:
-        console.log("Here is your graph")
-        break
-      default:
-        console.log("should never reach here")
-        break
-    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -89,16 +72,6 @@ export default function HorizontalLabelPositionBelowStepper() {
     setActiveStep(0);
   };
 
-  const openInNewTab = () => {
-
-    var newWindow = window.open();
-    newWindow.document.location.href = "home/panagiotis/Documents/adv-db-and-applications-uoi/src/frontend-react/src/charts/Barplot.html";
-
-
-    //var url = "../charts/Barplot.html"
-    //const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
-    //if (newWindow) newWindow.opener = null
-  }
 
   return (
     <div className={classes.root}>
@@ -112,8 +85,7 @@ export default function HorizontalLabelPositionBelowStepper() {
       <div>
         {activeStep === steps.length ? (
           <div>
-            <BarChart/>
-
+            <Typography className={classes.instructions}>{"All done"}</Typography>
             <Button onClick={handleReset}>Reset</Button>
           </div>
         ) : (

@@ -10,14 +10,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import DataService from '../services/DataService';
 
-import {countries} from './TransferList';
+import DataService from '../services/DataService';
+import {countries} from './IndexSelection';
+import {countriesScatter} from './IndexSelectionScatter';
 
 export var {years} = [];
-//import {countries} from './Stepper';
-
-//export var {selection} = [];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,22 +48,20 @@ function union(a, b) {
 }
 
 
-//console.log("ASD");
-//console.log(countries);
-
-//const indexes = ['Greece','Italy','Serres']
-
-//const trueIndexes = ['coalconsumptionTotal','residentialElectricityUseTotal',
-//                     'populationTotal']
-
 
 export default function TransferList() {
+  var finalCountries = [];
+
+  if (countries !== undefined) {
+    finalCountries = countries;
+  }
+  else {
+    finalCountries = countriesScatter;
+  }
+
   const classes = useStyles();
   const [checked, setChecked] = React.useState([]);
-  //console.log("before this")
-  //console.log(countries)
-  const [left, setLeft] = React.useState(countries);
-  //console.log("after this")
+  const [left, setLeft] = React.useState(finalCountries);
   const [right, setRight] = React.useState([]);
 
 
@@ -108,11 +104,10 @@ export default function TransferList() {
   };
 
   const handleFinalSelection = () => {
-
     var selection = right.join("-").replace(/\s/g, "");
     DataService.getYears(selection).then((response) => {
-    //  console.log(response)
       years = response.data
+      console.log(years);
     });
   };
 

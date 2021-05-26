@@ -4,9 +4,15 @@ const DATA_REST_API_URL = 'http://localhost:8080/data/';
 
 class DataService {
 
+  getDiagramType(diagramType) {
+    var new_request = DATA_REST_API_URL + 'd/' + diagramType;
+    return axios.get(new_request);
+  }
+
+
   getCountries(indexes) {
-    var request = DATA_REST_API_URL + 'i/' + indexes;
-    return axios.get(request);
+    var new_request = DATA_REST_API_URL + 'i/' + indexes;
+    return axios.get(new_request);
   }
 
 
@@ -22,17 +28,6 @@ class DataService {
   }
 
 
-    //getCountries = async (indexes) => {
-    //  var request = DATA_REST_API_URL + 'i/' + indexes;
-    //  return await axios.get(request);
-      //let { data } = res.data;
-      //return data
-      //this.setState({ users: data });
-  //  };
 }
 
 export default new DataService();
-
-
-//DataService.getCountries(selection).then((response) => {
-//  countries = response.data
